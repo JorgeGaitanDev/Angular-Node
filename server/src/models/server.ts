@@ -1,4 +1,6 @@
 import express, { Application } from "express";
+import routesCitas from "../routes/citas";
+import routesUser from "../routes/user";
 
 class Server {
     private app: Application;
@@ -8,6 +10,8 @@ class Server {
         this.app = express();
         this.port = process.env.PORT || "3001";
         this.listen();
+        this.midlewares();
+        this.routes();
        
     }
 
@@ -15,6 +19,15 @@ class Server {
         this.app.listen(this.port, () => {
             console.log("Hello world " + this.port);
         })
+    }
+
+    routes() {
+        this.app.use("/api/citas", routesCitas);
+        this.app.use("/api/users", routesUser);
+    }
+
+    midlewares() {
+        this.app.use(express.json());
     }
 }
 

@@ -59,7 +59,7 @@ npm run dev
 Hacemos lo mismo pero con el otro comando
 "typescript": "tsc --watch" (en ves de npx tsc --watch)
 
-ESTRUCTURA DE CARPETAS
+ESTRUCTURA DE CARPETAS************************************************************************
 En src creamos las siguientes carpetas
 controllers, db, models, routes
 Y afuera una llamada .env (para las variables de entorno)
@@ -108,4 +108,193 @@ const server = new Server();
 *.env
 PORT = "3001"
 
+CONFIGURACIONES DE RUTAS********************************************************
+Vamos a crear 3 endpoint
 
+1. http://localhost:3001/api/citas/       GET ---> devolver las citas
+2. http://localhost:3001/api/user        POST ---> agregamos usuario
+3. http://localhost:3001/api/user/login  POST ---> agregamos usuario
+
+Creamos dos arvhivos llamados citas.ts en controllers y routes 
+Escribimos
+*controllers/citas.ts
+import { Request, Response } from "express";
+
+export const getCitas = (req: Request, res: Response) => {
+    
+    res.json({
+        msg: "get Citas"
+    })
+    
+    // req.headers
+    // req.body
+
+    // res.json
+    // res.status // typado
+}
+
+*routes/citas.ts
+import { Router } from "express";
+import { getCitas } from "../controllers/citas";
+
+const router = Router();
+
+router.get("/", getCitas)
+
+export default router;
+
+Luego vamos a models/server.ts
+*models/server.ts
+import express, { Application } from "express";
+import routesCitas from "../routes/citas";
+
+
+class Server {
+    private app: Application;
+    private port: string; // puerto con el que vamos a correr la aplicaion
+
+    constructor() {
+        this.app = express();
+        this.port = process.env.PORT || "3001";
+        this.listen();
+        this.routes();
+       
+    }
+
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log("Hello world " + this.port);
+        })
+    }
+
+    routes() {
+        this.app.use("/api/citas", routesCitas);
+    }
+}
+
+export default Server;
+
+Instalamos la extensión de chrome json viewer (para que se vea mas detallado la ruta) 
+
+Creamos una carpeta
+*controllers/user.ts (para el login y user)
+import { Request, Response } from "express";
+
+export const newUser = (req: Request, res: Response) => {
+    console.log(req.body);
+
+    res.json({
+        msg: "New User",
+        body: req.body
+    })
+}
+
+export const loginUser = (req: Request, res: Response) => {
+    console.log(req.body);
+
+    res.json({
+        msg: "Login User",
+        body: req.body
+    })
+}
+
+Luego creamos 
+*routes/user.ts
+import { Router } from "express";
+import { loginUser, newUser } from "../controllers/user";
+
+const router = Router();
+
+router.post("/", newUser);
+router.post("/login", loginUser)
+
+export default router;
+
+Luego vamos a 
+*models/server.ts
+import express, { Application } from "express";
+import routesCitas from "../routes/citas";
+import routesUser from "../routes/user";
+
+class Server {
+    private app: Application;
+    private port: string; // puerto con el que vamos a correr la aplicaion
+
+    constructor() {
+        this.app = express();
+        this.port = process.env.PORT || "3001";
+        this.listen();
+        this.routes();
+       
+    }
+
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log("Hello world " + this.port);
+        })
+    }
+
+    routes() {
+        this.app.use("/api/citas", routesCitas);
+        this.app.use("/api/users", routesUser);
+    }
+}
+
+export default Server;
+
+Descargamos postman (https://www.youtube.com/watch?v=1SC0zHCsi8g&ab_channel=ROHITTECH)
+Abrimos un nuevo reuquest
+Y lo ponemos en POST y ponemos la ruta de users
+http://localhost:3001/api/users
+Dentro de ese archivo ponemos
+{
+    "nombre": "Jorge Gaitan",
+    "password": "Millos12."
+}
+
+Vamos a 
+*server.ts
+Creamos un nuevo metodo llamado
+  midlewares() {
+        this.app.use(express.json());
+    }
+
+Y lo ponemos en el constructor
+        this.midlewares();
+
+Volvemos al archivo 
+*controllers/user.ts
+import { Request, Response } from "express";
+
+export const newUser = (req: Request, res: Response) => {
+    
+    const { body } = req; ///////////////////////
+    // console.log(req.body);
+
+    res.json({
+        msg: "New User",
+        body //////////////////////////////
+    })
+}
+
+export const loginUser = (req: Request, res: Response) => {
+    
+    const { body } = req; ///////////////////
+    // console.log(req.body);
+
+    res.json({
+        msg: "Login User",
+        body //////////////////////
+    })
+}
+
+Vamos con el 3 endpoint
+En postman agregamos /login a la dirección
+http://localhost:3001/api/users/login
+Y nos va a mostrar el nuevo mensaje de login user
+{
+    "nombre": "Daniela Gutierrez",
+    "password": "Millos12."
+}
+
+CREACION DE MODELOS Y GETCITAS   ***************************************************************
