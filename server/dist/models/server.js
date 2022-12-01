@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
-        this.port = "3000";
+        this.port = process.env.PORT || "3001";
         this.listen();
     }
     listen() {

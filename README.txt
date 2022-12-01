@@ -82,8 +82,9 @@ class Server {
 
     constructor() {
         this.app = express();
-        this.port = "3000";
+        this.port = process.env.PORT || "3001";
         this.listen();
+       
     }
 
     listen() {
@@ -96,8 +97,15 @@ class Server {
 export default Server;
 
 *index.ts
+import dotenv from "dotenv";
 import Server from "./models/server";
+
+// configuramos dotenv
+dotenv.config();
 
 const server = new Server(); 
 
-Colocamos en el navegador localhost:3000
+*.env
+PORT = "3001"
+
+
